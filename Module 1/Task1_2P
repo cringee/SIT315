@@ -1,0 +1,45 @@
+//instalise varliable
+const int photoresistorPin = A0;
+const int ledPin = 7;
+const int threshold = 500; 
+const int buttonPin = 2;
+volatile bool buttonPressedFlag = false;
+
+
+void setup() {
+  // SENSE
+  pinMode(ledPin, OUTPUT);
+  pinMode(photoresistorPin, INPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+  digitalWrite(ledPin, LOW); 
+  Serial.begin(9600); 
+  attachInterrupt(digitalPinToInterrupt(buttonPin), buttonPressed, FALLING);
+}
+
+void loop() {
+  int lightValue = analogRead(photoresistorPin);
+  Serial.print("Light Value: ");
+  Serial.println(lightValue); 
+
+  if (buttonPressedFlag) {
+    digitalWrite(ledPin, LOW); 
+  } else if (lightValue > threshold) {
+    Serial.print("let there be light");
+    digitalWrite(ledPin, HIGH); 
+  } else {
+    digitalWrite(ledPin, LOW); 
+  }
+  delay(100); 
+}
+
+void buttonPressed() {
+
+  Serial.println("Interrupt triggered, LED is now off");
+  
+  if (buttonPressedFlag){
+    buttonPressedFlag = false;
+  } else {
+  	buttonPressedFlag = true;
+  }
+  
+}
