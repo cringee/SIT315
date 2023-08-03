@@ -1,0 +1,52 @@
+//instalise varliable
+const int photoresistorPin = A0;
+const int temperatureSensor = A1;
+const int ledPin = 7;
+const int thresholdLight = 500;
+const int thresholdTemp = 200;
+const int buttonPin = 2;
+volatile bool buttonPressedFlag = false;
+
+
+void setup() {
+  // SENSE
+  pinMode(ledPin, OUTPUT);
+  pinMode(photoresistorPin, INPUT);
+  pinMode(temperatureSensor, INPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+  digitalWrite(ledPin, LOW); 
+  Serial.begin(9600); 
+  attachInterrupt(digitalPinToInterrupt(buttonPin), buttonPressed, FALLING);
+}
+
+void loop() {
+  // ACT
+  if (buttonPressedFlag) {
+    int lightValue = analogRead(photoresistorPin);
+    if (lightValue > thresholdLight) {
+    	digitalWrite(ledPin, HIGH); 
+  	} else {
+    	digitalWrite(ledPin, LOW); 
+  	}
+  } else {
+  	int temperatureValue = analogRead(temperatureSensor);
+    if (temperatureValue > thresholdTemp) {
+    	digitalWrite(ledPin, HIGH); 
+  	} else {
+    	digitalWrite(ledPin, LOW); 
+  	}
+  }
+  delay(100); 
+}
+
+void buttonPressed() {
+  Serial.println("Interrupt triggered, sensor switched");
+  
+  if (buttonPressedFlag){
+    Serial.println("Temperature sensor");
+    buttonPressedFlag = false;
+  } else {
+    Serial.println("Light sensor");
+  	buttonPressedFlag = true;
+  }
+}
